@@ -17,7 +17,7 @@ m = 1
 
 
 def gravitational_acceleration(y):
-    return ((G * M) / ((R + y) ** 2)
+    return (G * M) / ((R + y) ** 2)
 
 
 def get_damping_force(v):
@@ -39,8 +39,8 @@ distance = [xn]
 #Start applying Euler method
 for t in time:
     #Get values
-    v = vn + an * delta_t, 3
-    x = xn + v * delta_t, 3
+    v = vn + an * delta_t
+    x = xn + v * delta_t
     a = (get_damping_force(vn) / m) - gravitational_acceleration(xn)
 
     #Append values to arrays
@@ -128,6 +128,8 @@ time = np.array(time[0:distance_length])
 #Plot Euler-Richardson iterations
 fig, axs = plt.subplots(3)
 
+fig.suptitle('Euler - Richardson scheme')
+
 axs[0].plot(time, np.array(acceleration), color='green')
 axs[0].set(title='Acceleration2',
        xlabel='time (s)', ylabel=r'$\frac{m}{s^2}$')
@@ -141,4 +143,5 @@ axs[2].set(title='Distance2',
        xlabel='time (s)', ylabel='m')
 
 fig.tight_layout()
+
 plt.show()
