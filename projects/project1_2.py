@@ -120,3 +120,70 @@ fig.tight_layout()
 
 plt.savefig('./Test3.pdf')
 
+#Problem 1B
+
+def simulate_walk(p_right, number_of_steps):
+    return sum([1 if random() < p_right else -1 for i in range(number_of_steps)])
+
+def simulate_squared_walk(p_right, number_of_steps):
+    return sum([1 if random() < p_right else -1 for i in range(number_of_steps)]) ** 2
+
+def get_expectation(N, p_right):
+    return sum([simulate_walk(p_right, N) for i in range(100000)]) / 100000
+
+def get_expectation_squared(N, p_right):
+    return sum([simulate_walk(p_right, N) for i in range(100000)]) / 100000
+
+
+p_right = 0.8
+p_left = 0.2
+
+N = [4, 8, 16, 32, 64, 128, 256]
+
+expectations = [get_expectation(n, p_right) for n in N]
+analytical_expectations = [(p_right - p_left) * n for n in N]
+
+print('Numerical expectation of distance:', expectations)
+print('Analytical expectation of distance:', analytical_expectations)
+
+expectations_squared = [get_expectation_squared(n, p_right) for n in N]
+analytical_squared_expectations = [4 * p_right * p_left * n for n in N]
+
+print('Numerical expectation of distance squared:', expectations_squared)
+print('Analytical expectation of distance squared:', analytical_squared_expectations)
+
+plt.clf()
+plt.plot(np.array(N), np.array(expectations_squared), 'o')
+plt.plot(np.array(N), np.array(analytical_squared_expectations), 'o')
+plt.legend(['Numerical expectation squared', 'Analytical expectation squared'])
+plt.xlabel('N')
+plt.ylabel('Expectation of distance squared')
+plt.savefig('./ExpectationDistanceSquared.pdf')
+plt.clf()
+
+#Problem 2B
+
+def simulate_distinct_steps(steps, p_right):
+    iterations = 100000
+    unique_steps = []
+
+    for i in range(iterations):
+        set_of_steps = set({})
+        position = 0
+        for k in range(steps):
+            set_of_steps.add(position)
+            walks = [-1, 1]
+            position += walks[int(p_right < random())]
+
+        # print(set_of_steps)
+        unique_steps.append(len(set_of_steps))
+
+    return sum(unique_steps) / len(unique_steps)
+
+steps = np.linspace(10, 100, 10)
+unique_step_expectations = np.array([simulate_distinct_steps(int(s), p_right) for s in steps])
+
+plt.plot(steps, unique_step_expectations, 'o')
+plt.xlabel('Number of steps (N)')
+plt.ylabel('Expected amount of unique steps')
+plt.savefig('./ExpectationOfUniqueSteps.pdf')
