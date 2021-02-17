@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 from time import localtime
 from random import random, seed
 
-
+#Get seed with the formula described in the class
 def get_seed():
     year, month, day, hour, minute, sec, _, _, _ = localtime()
 
     return year + 70 * (hour + 12 * (day + 31 * (day + 23 * minute + 59 * sec)))
 
-
+#Perform random number generation with LC generator
 def lc_generator(a, c, m, n, seed=None):
     if n < 0:
         return False
@@ -21,15 +21,17 @@ def lc_generator(a, c, m, n, seed=None):
 
     if n == 1:
         return np.array([I[0] / m])
-
+    #Perform sucessive iteration
     for i in range(n - 1):
         previous = I[i]
         rand_number = (a * previous + c) % m
         I.append(rand_number)
 
+    #Perform
     return np.array([rand_nr / m for rand_nr in I])
 
 
+#Funcion to get k-th moment
 def get_moment(arr, k):
     return np.power(arr, k).sum() / len(arr)
 
@@ -39,7 +41,7 @@ a_1 = 25214903917
 m_1 = 2 ** 48
 c_1 = 11
 
-# print('First list of random numbers:', lc_generator(a_1, c_1, m_1, 22))
+print('First list of random numbers:', lc_generator(a_1, c_1, m_1, 22))
 
 #Task 1a b)
 
@@ -49,11 +51,10 @@ m_2 = 256
 r_1_1 = 1
 
 random_list_custom = lc_generator(a_2, c_2, m_2, 30, r_1_1)
-
+#Initialize random seed
 seed(None)
 random_list_python = np.array([random() for x in range(30)])
 i = np.linspace(1, 30, 30)
-
 fig, axes = plt.subplots(nrows=1, ncols=2)
 
 axes[0].plot(i, random_list_custom, 'bo')
@@ -72,18 +73,30 @@ plt.clf()
 
 ##Performing second test
 
-custom_random_sublist = random_list_custom[0::2]
-python_random_sublist = random_list_python[0::2]
-i = np.linspace(1, 30, 15)
+python_x = []
+python_y = []
+custom_x = []
+custom_y = []
+#Collect dataset for second test plots
+
+for i in range(len(random_list_custom)):
+    python_x.append(random_list_python[2 * i])
+    python_y.append(random_list_python[2 * i + 1])
+    custom_x.append(random_list_custom[2 * i])
+    custom_y.append(random_list_custom[2 * i + 1])
+
+
+    if 2 * i + 1 >= len(random_list_custom) - 1:
+        break
 
 fig, axes = plt.subplots(nrows=1, ncols=2)
 
-axes[0].plot(i, custom_random_sublist, 'bo')
+axes[0].plot(np.array(custom_x), np.array(custom_y), 'bo')
 axes[0].set_title('Custom Random Numbers')
 axes[0].set_xlabel('ith number')
 axes[0].set_ylabel('Number value')
 
-axes[1].plot(i, python_random_sublist, 'ro')
+axes[1].plot(np.array(python_x), np.array(python_y), 'ro')
 axes[1].set_xlabel('ith number')
 axes[1].set_ylabel('Number value')
 axes[1].set_title('Python Random Numbers')
@@ -94,6 +107,7 @@ plt.clf()
 
 fig, axes = plt.subplots(nrows=1, ncols=2)
 
+#Get moments for comparison + analytic moments
 moment_len = np.linspace(1, 10, 10)
 moments = np.array([get_moment(random_list_custom, k) for k in moment_len])
 comparison_moments1 = np.array([1/(k + 1) + (1/np.sqrt(len(random_list_custom)))for k in moment_len])
@@ -122,6 +136,7 @@ plt.savefig('./Test3.pdf')
 
 #Problem 1B
 
+#Random walk simulations and expected value computations
 def simulate_walk(p_right, number_of_steps):
     return sum([1 if random() < p_right else -1 for i in range(number_of_steps)])
 
@@ -166,7 +181,7 @@ plt.clf()
 def simulate_distinct_steps(steps, p_right):
     iterations = 100000
     unique_steps = []
-
+    # Simulation of distinct steps, simulating path, and calculating set length
     for i in range(iterations):
         set_of_steps = set({})
         position = 0
@@ -180,6 +195,7 @@ def simulate_distinct_steps(steps, p_right):
 
     return sum(unique_steps) / len(unique_steps)
 
+#Compute distinct steps and plot dependence
 steps = np.linspace(10, 100, 10)
 unique_step_expectations = np.array([simulate_distinct_steps(int(s), p_right) for s in steps])
 
